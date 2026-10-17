@@ -2,7 +2,8 @@
 #define LOWER 1
 #define MOUSE_KEYS 2
 #define MOUSE_TP 3
-#define MOUSE_TP_SET 4
+#define SCROLL 4  // [新增] 宣告滾輪層
+#define MOUSE_TP_SET 5
 
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 #include <dt-bindings/zmk/rgb.h>
@@ -72,8 +73,8 @@
  &kp TAB       &kp Q           &kp W            &kp E           &kp R      &kp T                  &kp Y      &kp U      &kp I          &kp O    &kp P      &kp LBKT   &kp RBKT      &kp BSLH         &rgb_ug RGB_ON  &kp T
  &kp CAPS      &kp A           &kp S            &kp D           &kp F      &kp G                  &kp H      &kp J      &kp K          &kp L    &kp SEMI   &kp APOS   &kp ENTER     &rgb_ug RGB_OFF                  &kp G
  &kp LSHFT     &kp Z           &kp X            &kp C           &kp V      &kp B                  &kp N      &kp M      &kp COMMA      &kp DOT  &kp FSLH   &kp RSHFT  &kp UP_ARROW  &kp DELETE                       &kp B
- &kp LCTRL     &kp LEFT_GUI    &kp LEFT_ALT     &mo 1                      &kp SPACE                         &kp SPACE  &kp RIGHT_ALT  &mo 2    &kp RCTRL  &kp LEFT   &kp DOWN      &kp RIGHT                        &kp SPACE
- &kp UP_ARROW  &kp LEFT_ARROW  &kp RIGHT_ARROW  &kp DOWN_ARROW  &kp ENTER  &kp SPACE              &mkp LCLK  &mkp LCLK  &mkp RCLK      &none
+ &kp LCTRL     &kp LALT        &kp LGUI         &mo 1                                 &kp SPACE                                 &kp SPACE  &kp RALT   &mo 2      &kp RCTRL  &kp LEFT       &kp DOWN        &kp RIGHT                        &kp SPACE // [修改] 左手底排改為 Mac 鍵位
+ &kp UP_ARROW  &kp LEFT_ARROW  &kp RIGHT_ARROW  &kp DOWN_ARROW  &kp ENTER  &kp SPACE              &mkp LCLK  &mkp LCLK  &mkp RCLK      &mo SCROLL // [修改] 右手最內側拇指鍵設定為按住切換到滾輪層
             >;
 
             label = "layer0";
@@ -96,11 +97,11 @@
 
         layer_2 {
             bindings = <
- &kp TILDE  &kp F1  &kp F2  &kp F3  &kp F4  &kp F5  &kp F6      &kp F7           &kp F8          &kp F9           &kp F10          &kp F11          &kp F12  &trans          &kp HOME             &kp F6
- &trans     &trans  &trans  &trans  &trans  &trans              &out OUT_USB     &out OUT_BLE    &trans           &trans           &trans           &trans   &trans          &trans      &kp END  &trans
- &trans     &trans  &trans  &trans  &trans  &trans              &rgb_ug RGB_OFF  &rgb_ug RGB_ON  &rgb_ug RGB_EFF  &rgb_ug RGB_EFR  &rgb_ug RGB_SPI  &trans   &trans          &kp INSERT           &trans
- &trans     &trans  &trans  &trans  &trans  &trans              &bt BT_SEL 0     &bt BT_SEL 1    &bt BT_SEL 2     &bt BT_SEL 3     &bt BT_SEL 4     &trans   &trans          &trans               &trans
- &trans     &trans  &trans  &trans          &trans                               &trans          &trans           &trans           &trans           &trans   &bt BT_CLR_ALL  &bt BT_CLR           &trans
+ &kp TILDE  &kp F1  &kp F2  &kp F3  &kp F4  &kp F5  &kp F6      &kp F7           &kp F8          &kp F9           &kp F10          &kp F11          &kp F12          &trans          &kp HOME             &kp F6
+ &trans     &trans  &trans  &trans  &trans  &trans              &out OUT_USB     &out OUT_BLE    &trans           &trans           &trans           &trans           &trans          &trans      &kp END  &trans
+ &trans     &trans  &trans  &trans  &trans  &trans              &rgb_ug RGB_OFF  &rgb_ug RGB_ON  &rgb_ug RGB_EFF  &rgb_ug RGB_EFR  &rgb_ug RGB_SPI  &trans           &trans          &kp INSERT           &trans
+ &trans     &trans  &trans  &trans  &trans  &trans              &bt BT_SEL 0     &bt BT_SEL 1    &bt BT_SEL 2     &bt BT_SEL 3     &bt BT_SEL 4     &trans           &trans          &trans               &trans
+ &trans     &trans  &trans  &trans          &trans                                               &trans           &trans           &trans           &trans           &trans          &bt BT_CLR_ALL  &bt BT_CLR           &trans
  &trans     &trans  &trans  &trans  &trans  &trans              &trans           &trans          &trans           &trans
             >;
 
@@ -120,6 +121,23 @@
 
             label = "layer3";
             sensor-bindings = <&rsr_vol>;
+        };
+
+        // [新增] 軌跡球滾輪層
+        scroll_layer {
+            bindings = <
+ &trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans          &trans
+ &trans  &trans  &trans  &trans  &trans  &trans              &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+ &trans  &trans  &trans  &trans  &trans  &trans              &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans          &trans
+ &trans  &trans  &trans  &trans  &trans  &trans              &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans          &trans
+ &trans  &trans  &trans  &trans          &trans                      &trans  &trans  &trans  &trans  &trans  &trans  &trans          &trans
+ &trans  &trans  &trans  &trans  &trans  &trans              &trans  &trans  &trans  &trans
+            >;
+
+            label = "scroll_layer";
+            // [核心修改] 在此層中，將軌跡球的輸入劫持為滑鼠滾輪 (msc)
+            sensor-bindings = <&rsr_vol>;
+            trackball-bindings = <&msc SCRL_UP>, <&msc SCRL_DOWN>, <&msc SCRL_LEFT>, <&msc SCRL_RIGHT>;
         };
     };
 };
