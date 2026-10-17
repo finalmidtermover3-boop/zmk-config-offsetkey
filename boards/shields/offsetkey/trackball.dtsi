@@ -1,5 +1,4 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
-#include <input/processors.dtsi> // [新增] 引入 ZMK 內建的處理器庫
 
 &pinctrl {
     spi1_default: spi1_default {
@@ -36,11 +35,7 @@
         irq-gpios = <&gpio0 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         cpi = <800>;
         evt-type = <INPUT_EV_REL>;
-        // [恢復] 順著驅動的脾氣，讓它輸出 X 與 Y
         x-input-code = <INPUT_REL_X>;
         y-input-code = <INPUT_REL_Y>;
-
-        // [終極攔截] 在這裡掛載處理器，將出來的 XY 訊號強制翻譯成滾輪
-        input-processors = <&zip_xy_to_scroll_mapper>;
     };
 };
