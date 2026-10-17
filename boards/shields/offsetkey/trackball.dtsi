@@ -1,4 +1,5 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <input/processors.dtsi> // [新增] 引入 ZMK 內建的處理器庫
 
 &pinctrl {
     spi1_default: spi1_default {
@@ -31,32 +32,15 @@
         status = "okay";
         compatible = "cormoran,pmw3610";
         reg = <0>;
-        // [保留] 降頻防暴衝
         spi-max-frequency = <1000000>;
         irq-gpios = <&gpio0 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         cpi = <800>;
         evt-type = <INPUT_EV_REL>;
+        // [恢復] 順著驅動的脾氣，讓它輸出 X 與 Y
         x-input-code = <INPUT_REL_X>;
         y-input-code = <INPUT_REL_Y>;
-    };
-};
 
-// [新增] 將滾輪轉換模組放在這裡，它只會跟著右手軌跡球一起編譯！
-/ {
-    scroll_listener: scroll_listener {
-        compatible = "zmk,input-behavior-listener";
-        device = <&trackball>;
-        layers = <4>;
-        evt-type = <INPUT_EV_REL>;
-        x-input-code = <INPUT_REL_X>;
-        y-input-code = <INPUT_REL_Y>;
-        bindings = <&ib_wheel_scaler 1 1>;
-    };
-
-    ib_wheel_scaler: ib_wheel_scaler {
-        compatible = "zmk,input-behavior-scaler";
-        #binding-cells = <2>;
-        evt-type = <INPUT_EV_REL>;
-        input-code = <INPUT_REL_WHEEL>;
+        // [終極攔截] 在這裡掛載處理器，將出來的 XY 訊號強制翻譯成滾輪
+        input-processors = <&zip_xy_to_scroll_mapper>;
     };
 };
