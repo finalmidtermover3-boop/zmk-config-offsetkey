@@ -31,12 +31,32 @@
         status = "okay";
         compatible = "cormoran,pmw3610";
         reg = <0>;
-        // [修改] 將 SPI 頻率從 2000000 降至 1000000，增加通訊穩定度，徹底解決游標暴衝 Bug
+        // [保留] 降頻防暴衝
         spi-max-frequency = <1000000>;
         irq-gpios = <&gpio0 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         cpi = <800>;
         evt-type = <INPUT_EV_REL>;
         x-input-code = <INPUT_REL_X>;
         y-input-code = <INPUT_REL_Y>;
+    };
+};
+
+// [新增] 將滾輪轉換模組放在這裡，它只會跟著右手軌跡球一起編譯！
+/ {
+    scroll_listener: scroll_listener {
+        compatible = "zmk,input-behavior-listener";
+        device = <&trackball>;
+        layers = <4>;
+        evt-type = <INPUT_EV_REL>;
+        x-input-code = <INPUT_REL_X>;
+        y-input-code = <INPUT_REL_Y>;
+        bindings = <&ib_wheel_scaler 1 1>;
+    };
+
+    ib_wheel_scaler: ib_wheel_scaler {
+        compatible = "zmk,input-behavior-scaler";
+        #binding-cells = <2>;
+        evt-type = <INPUT_EV_REL>;
+        input-code = <INPUT_REL_WHEEL>;
     };
 };
