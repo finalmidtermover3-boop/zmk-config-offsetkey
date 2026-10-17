@@ -16,9 +16,6 @@
 #include <behaviors/runtime-sensor-rotate.dtsi>
 #include <behaviors/runtime_macro.dtsi>
 
-// [新增] 宣告一個將軌跡球XY軸轉換為滾輪訊號的輸入處理器
-#define ZMK_POINTING_DEFAULT_SCRL_VAL 10
-
 &mmv_input_listener { input-processors = <&zip_xy_scaler 2 1>; };
 &msc_input_listener { input-processors = <&zip_scroll_scaler 2 1>; };
 
@@ -43,7 +40,7 @@
         evt-type = <INPUT_EV_REL>;
         x-input-code = <INPUT_REL_X>;
         y-input-code = <INPUT_REL_Y>;
-        subsys = <INPUT_SUBSYS_POINTING>;
+        // [修正] 移除了導致報錯的無效標籤，保持純淨語法
         bindings = <&ib_wheel_scaler 1 1>;
     };
 
@@ -145,7 +142,6 @@
             sensor-bindings = <&rsr_vol>;
         };
 
-        // [修改] 移除了錯誤的 trackball-bindings，保持乾淨的切換層
         scroll_layer {
             bindings = <
  &trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans          &trans
